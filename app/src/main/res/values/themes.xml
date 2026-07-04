@@ -1,0 +1,7 @@
+<resources>
+    <style name="Theme.CarrotNaviClient" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">#FF9800</item>
+        <item name="colorPrimaryVariant">#F57C00</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+    </style>
+</resources>
