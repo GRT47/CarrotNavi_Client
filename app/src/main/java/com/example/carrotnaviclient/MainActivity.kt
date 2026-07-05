@@ -31,6 +31,13 @@ class MainActivity : AppCompatActivity() {
     private val client = OkHttpClient()
     private val mainHandler = Handler(Looper.getMainLooper())
 
+    private val routeInfoRunnable = object : Runnable {
+        override fun run() {
+            fetchRouteInfo()
+            mainHandler.postDelayed(this, 2000)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -71,6 +78,9 @@ class MainActivity : AppCompatActivity() {
                                 binding.tvConnectionStatus.setBackgroundColor(android.graphics.Color.parseColor("#4CAF50"))
                                 enableUI(true)
                                 fetchSettings()
+                                mainHandler.removeCallbacks(routeInfoRunnable)
+                                fetchRouteInfo()
+                                mainHandler.postDelayed(routeInfoRunnable, 2000)
                             }
                         }
                     })
@@ -146,6 +156,47 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    private fun fetchRouteInfo() {
+        val ip = serverIp ?: return
+        val request = Request.Builder()
+            .url("http://$ip:$serverPort/api/route_info")
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {}
+
+            override fun onResponse(call: Call, response: Response) {
+                val body = response.body?.string() ?: return
+                try {
+                    val json = JSONObject(body)
+                    val szGoalName = json.optString("szGoalName", "")
+                    val nGoPosDist = json.optInt("nGoPosDist", 0)
+                    val nGoPosTime = json.optInt("nGoPosTime", 0)
+                    
+                    mainHandler.post {
+                        if (szGoalName.isNotEmpty()) {
+                            binding.llRouteInfoContainer.visibility = View.VISIBLE
+                            binding.tvRouteDestination.text = "목적지: $szGoalName"
+                            
+                            val distText = if (nGoPosDist > 1000) String.format("%.1f km", nGoPosDist / 1000.0) else "$nGoPosDist m"
+                            binding.tvRouteRemainDist.text = "남은 거리: $distText"
+                            
+                            val min = nGoPosTime / 60
+                            val hour = min / 60
+                            val remainMin = min % 60
+                            val timeText = if (hour > 0) "${hour}시간 ${remainMin}분" else "${remainMin}분"
+                            binding.tvRouteRemainTime.text = "소요 시간: $timeText"
+                        } else {
+                            binding.llRouteInfoContainer.visibility = View.GONE
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        })
+    }
+
     private fun updateSettingOnServer(key: String, value: String) {
         val ip = serverIp ?: return
         
@@ -161,6 +212,28 @@ class MainActivity : AppCompatActivity() {
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {}
             override fun onResponse(call: Call, response: Response) {}
+        })
+    }
+
+    private fun cancelRoute() {
+        val ip = serverIp ?: return
+        val formBody = FormBody.Builder().build()
+        val request = Request.Builder()
+            .url("http://$ip:$serverPort/api/cancel_route")
+            .post(formBody)
+            .build()
+            
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                mainHandler.post {
+                    Toast.makeText(this@MainActivity, "취소 요청 실패", Toast.LENGTH_SHORT).show()
+                }
+            }
+            override fun onResponse(call: Call, response: Response) {
+                mainHandler.post {
+                    Toast.makeText(this@MainActivity, "안내를 취소했습니다.", Toast.LENGTH_SHORT).show()
+                }
+            }
         })
     }
 
@@ -191,10 +264,15 @@ class MainActivity : AppCompatActivity() {
                 updateSettingOnServer("DEBUG_OVERLAY_VISIBLE", if (isChecked) "true" else "false")
             }
         }
+        
+        binding.btnCancelRoute.setOnClickListener {
+            cancelRoute()
+        }
     }
     
     override fun onDestroy() {
         super.onDestroy()
+        mainHandler.removeCallbacks(routeInfoRunnable)
         try {
             discoveryListener?.let { nsdManager?.stopServiceDiscovery(it) }
         } catch (e: Exception) {}

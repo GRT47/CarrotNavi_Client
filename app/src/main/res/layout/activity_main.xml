@@ -24,6 +24,53 @@
             android:padding="16dp"
             android:background="#333333"/>
 
+        <LinearLayout
+            android:id="@+id/llRouteInfoContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#2C2C2C"
+            android:padding="16dp"
+            android:layout_marginBottom="24dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/tvRouteDestination"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="목적지: "
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"/>
+
+            <TextView
+                android:id="@+id/tvRouteRemainDist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="남은 거리: "
+                android:textColor="#DDDDDD"
+                android:textSize="16sp"
+                android:layout_marginBottom="4dp"/>
+
+            <TextView
+                android:id="@+id/tvRouteRemainTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="소요 시간: "
+                android:textColor="#DDDDDD"
+                android:textSize="16sp"
+                android:layout_marginBottom="16dp"/>
+
+            <Button
+                android:id="@+id/btnCancelRoute"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="경로 안내 취소"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#D32F2F"/>
+        </LinearLayout>
+
         <Switch
             android:id="@+id/swBoostEnable"
             android:layout_width="match_parent"
