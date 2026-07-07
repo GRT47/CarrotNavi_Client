@@ -1,209 +1,401 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#121212"
-    android:fitsSystemWindows="true"
-    android:padding="16dp">
+    android:fitsSystemWindows="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:animateLayoutChanges="true">
 
-        <TextView
-            android:id="@+id/tvConnectionStatus"
+        <!-- 상태 카드 -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="내비게이션 탐색 중..."
-            android:textColor="#FF9800"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="24dp"
-            android:gravity="center"
-            android:padding="16dp"
-            android:background="#333333"/>
-
-        <LinearLayout
-            android:id="@+id/llRouteInfoContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="#2C2C2C"
-            android:padding="16dp"
-            android:layout_marginBottom="24dp"
-            android:visibility="gone">
-
-            <TextView
-                android:id="@+id/tvRouteDestination"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="목적지: "
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="8dp"/>
-
-            <TextView
-                android:id="@+id/tvRouteRemainDist"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="남은 거리: "
-                android:textColor="#DDDDDD"
-                android:textSize="16sp"
-                android:layout_marginBottom="4dp"/>
-
-            <TextView
-                android:id="@+id/tvRouteRemainTime"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="소요 시간: "
-                android:textColor="#DDDDDD"
-                android:textSize="16sp"
-                android:layout_marginBottom="16dp"/>
-
-            <Button
-                android:id="@+id/btnCancelRoute"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="경로 안내 취소"
-                android:textColor="#FFFFFF"
-                android:backgroundTint="#D32F2F"/>
-        </LinearLayout>
-
-        <Switch
-            android:id="@+id/swBoostEnable"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="구간단속 보상가속 기능 켜기"
-            android:textColor="#FFFFFF"
-            android:textStyle="bold"
             android:layout_marginBottom="16dp"
-            android:enabled="false"/>
+            app:cardBackgroundColor="#1E1E1E"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:strokeWidth="0dp">
 
-        <LinearLayout
-            android:id="@+id/llBoostSettingsContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="구간단속 보상가속 여유 속도"
-                android:textColor="#DDDDDD"
-                android:layout_marginBottom="8dp"/>
-                
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:orientation="vertical"
+                android:animateLayoutChanges="true">
                 
-                <com.google.android.material.slider.Slider
-                    android:id="@+id/sliderOffset"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:valueFrom="0"
-                    android:valueTo="50"
-                    android:stepSize="1"
-                    android:enabled="false"/>
-                    
                 <TextView
-                    android:id="@+id/tvOffsetValue"
-                    android:layout_width="60dp"
+                    android:id="@+id/tvConnectionStatus"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="0 km/h"
-                    android:textColor="#FFFFFF"
-                    android:gravity="end"
-                    android:textStyle="bold"/>
+                    android:text="내비게이션 탐색 중..."
+                    android:textColor="#FF9800"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:padding="20dp" />
+
+                <!-- 경로 정보 (숨김 기본) -->
+                <LinearLayout
+                    android:id="@+id/llRouteInfoContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="20dp"
+                    android:paddingBottom="20dp"
+                    android:visibility="gone">
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#333333" android:layout_marginBottom="16dp"/>
+
+                    <TextView
+                        android:id="@+id/tvRouteDestination"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="목적지: "
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="12dp"/>
+
+                    <TextView
+                        android:id="@+id/tvRouteRemainDist"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="남은 거리: "
+                        android:textColor="#BBBBBB"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="6dp"/>
+
+                    <TextView
+                        android:id="@+id/tvRouteRemainTime"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="소요 시간: "
+                        android:textColor="#BBBBBB"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="20dp"/>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnCancelRoute"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:text="경로 안내 취소"
+                        android:textColor="#FFFFFF"
+                        app:backgroundTint="#D32F2F"
+                        app:cornerRadius="12dp"
+                        android:textStyle="bold" />
+                </LinearLayout>
             </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="보상가속 모드 설정"
-                android:textColor="#DDDDDD"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="8dp"/>
-                
-            <RadioGroup
-                android:id="@+id/rgBoostMode"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <RadioButton
-                    android:id="@+id/rbBoostProgressive"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="#FFFFFF"
-                    android:text="점진적 보상가속 (도달 시 중단)"
-                    android:enabled="false"/>
-                <RadioButton
-                    android:id="@+id/rbBoostFixed"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="#FFFFFF"
-                    android:text="고정 보상가속 (강제 유지)"
-                    android:enabled="false"/>
-            </RadioGroup>
+        <!-- 구간단속 설정 카드 -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="#1E1E1E"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:strokeWidth="0dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="목표 평균속도 하향값 (km/h)"
-                android:textColor="#DDDDDD"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="8dp"/>
-                
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
-                
-                <com.google.android.material.slider.Slider
-                    android:id="@+id/sliderFakeDrop"
-                    android:layout_width="0dp"
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:animateLayoutChanges="true">
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/swBoostEnable"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:valueFrom="0"
-                    android:valueTo="20"
-                    android:stepSize="1"
-                    android:enabled="false"/>
-                    
-                <TextView
-                    android:id="@+id/tvFakeDropValue"
-                    android:layout_width="60dp"
-                    android:layout_height="wrap_content"
-                    android:text="0"
+                    android:text="구간단속 보상가속 기능"
                     android:textColor="#FFFFFF"
-                    android:gravity="end"
-                    android:textStyle="bold"/>
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:enabled="false"/>
+
+                <LinearLayout
+                    android:id="@+id/llBoostSettingsContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#333333" android:layout_marginTop="16dp" android:layout_marginBottom="16dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="보상가속 여유 속도"
+                        android:textColor="#BBBBBB"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="4dp"/>
+                        
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+                        
+                        <com.google.android.material.slider.Slider
+                            android:id="@+id/sliderOffset"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:valueFrom="0"
+                            android:valueTo="50"
+                            android:stepSize="1"
+                            android:enabled="false"
+                            app:thumbColor="#4CAF50"
+                            app:trackColorActive="#4CAF50"
+                            app:trackColorInactive="#333333"/>
+                            
+                        <TextView
+                            android:id="@+id/tvOffsetValue"
+                            android:layout_width="60dp"
+                            android:layout_height="wrap_content"
+                            android:text="0 km/h"
+                            android:textColor="#FFFFFF"
+                            android:gravity="end"
+                            android:textStyle="bold"/>
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="보상가속 모드 설정"
+                        android:textColor="#BBBBBB"
+                        android:textSize="14sp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="8dp"/>
+                        
+                    <RadioGroup
+                        android:id="@+id/rgBoostMode"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <RadioButton
+                            android:id="@+id/rbBoostProgressive"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="#FFFFFF"
+                            android:text="점진적 보상가속 (도달 시 중단)"
+                            app:buttonTint="#4CAF50"
+                            android:enabled="false"/>
+                        <RadioButton
+                            android:id="@+id/rbBoostFixed"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="#FFFFFF"
+                            android:text="고정 보상가속 (강제 유지)"
+                            app:buttonTint="#4CAF50"
+                            android:enabled="false"/>
+                    </RadioGroup>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="목표 평균속도 하향값 (km/h)"
+                        android:textColor="#BBBBBB"
+                        android:textSize="14sp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="4dp"/>
+                        
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+                        
+                        <com.google.android.material.slider.Slider
+                            android:id="@+id/sliderFakeDrop"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:valueFrom="0"
+                            android:valueTo="20"
+                            android:stepSize="1"
+                            android:enabled="false"
+                            app:thumbColor="#4CAF50"
+                            app:trackColorActive="#4CAF50"
+                            app:trackColorInactive="#333333"/>
+                            
+                        <TextView
+                            android:id="@+id/tvFakeDropValue"
+                            android:layout_width="60dp"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="#FFFFFF"
+                            android:gravity="end"
+                            android:textStyle="bold"/>
+                    </LinearLayout>
+                </LinearLayout>
             </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-        </LinearLayout>
-
-        <Switch
-            android:id="@+id/swDebugOverlay"
+        <!-- 고급 설정 카드 -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="디버그 오버레이 표시"
-            android:textColor="#FFFFFF"
-            android:layout_marginTop="32dp"
-            android:enabled="false"/>
+            android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="#1E1E1E"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:strokeWidth="0dp">
+            
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="20dp">
+                
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/swDebugOverlay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="디버그 오버레이 표시"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:enabled="false"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- API 키 설정 카드 -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="#1E1E1E"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="API 키 관리"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:layout_marginBottom="24dp"/>
+
+                <!-- TMap 카테고리 -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:hint="TMap App Key"
+                    app:boxBackgroundColor="#2C2C2C"
+                    app:boxCornerRadiusTopStart="8dp"
+                    app:boxCornerRadiusTopEnd="8dp"
+                    app:boxCornerRadiusBottomStart="8dp"
+                    app:boxCornerRadiusBottomEnd="8dp"
+                    app:boxStrokeWidth="0dp"
+                    app:boxStrokeWidthFocused="0dp"
+                    app:hintTextColor="#BBBBBB"
+                    android:textColorHint="#888888">
+                    
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etTmapAppKey"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#FFFFFF"
+                        android:inputType="textVisiblePassword"
+                        android:paddingTop="26dp"
+                        android:paddingBottom="10dp"
+                        android:enabled="false"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Kakao 카테고리 -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:hint="Kakao Native App Key"
+                    app:boxBackgroundColor="#2C2C2C"
+                    app:boxCornerRadiusTopStart="8dp"
+                    app:boxCornerRadiusTopEnd="8dp"
+                    app:boxCornerRadiusBottomStart="8dp"
+                    app:boxCornerRadiusBottomEnd="8dp"
+                    app:boxStrokeWidth="0dp"
+                    app:boxStrokeWidthFocused="0dp"
+                    app:hintTextColor="#BBBBBB"
+                    android:textColorHint="#888888">
+                    
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etKakaoNativeAppKey"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#FFFFFF"
+                        android:inputType="textVisiblePassword"
+                        android:paddingTop="26dp"
+                        android:paddingBottom="10dp"
+                        android:enabled="false"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="24dp"
+                    android:hint="Kakao REST API Key"
+                    app:boxBackgroundColor="#2C2C2C"
+                    app:boxCornerRadiusTopStart="8dp"
+                    app:boxCornerRadiusTopEnd="8dp"
+                    app:boxCornerRadiusBottomStart="8dp"
+                    app:boxCornerRadiusBottomEnd="8dp"
+                    app:boxStrokeWidth="0dp"
+                    app:boxStrokeWidthFocused="0dp"
+                    app:hintTextColor="#BBBBBB"
+                    android:textColorHint="#888888">
+                    
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etKakaoRestApiKey"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#FFFFFF"
+                        android:inputType="textVisiblePassword"
+                        android:paddingTop="26dp"
+                        android:paddingBottom="10dp"
+                        android:enabled="false"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSaveApiKeys"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:text="API 키 내비앱으로 전송 및 저장"
+                    android:textColor="#FFFFFF"
+                    app:backgroundTint="#4CAF50"
+                    app:cornerRadius="12dp"
+                    android:textStyle="bold"
+                    android:enabled="false"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <TextView
             android:id="@+id/tvAppVersion"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="버전 정보"
-            android:textColor="#888888"
+            android:textColor="#666666"
             android:textSize="12sp"
             android:gravity="center"
-            android:layout_marginTop="32dp"
-            android:layout_marginBottom="16dp"/>
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="24dp"/>
 
     </LinearLayout>
 </ScrollView>

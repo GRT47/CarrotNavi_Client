@@ -110,6 +110,10 @@ class MainActivity : AppCompatActivity() {
         binding.rbBoostFixed.isEnabled = enabled
         binding.sliderFakeDrop.isEnabled = enabled
         binding.swDebugOverlay.isEnabled = enabled
+        binding.etTmapAppKey.isEnabled = enabled
+        binding.etKakaoNativeAppKey.isEnabled = enabled
+        binding.etKakaoRestApiKey.isEnabled = enabled
+        binding.btnSaveApiKeys.isEnabled = enabled
     }
 
     private fun fetchSettings() {
@@ -134,14 +138,22 @@ class MainActivity : AppCompatActivity() {
                     val fakeDrop = json.optInt("BLOCK_SPEED_FAKE_DROP", 10)
                     val boostMode = json.optInt("BLOCK_SPEED_BOOST_MODE", 0)
                     val isDebugOverlayVisible = json.optBoolean("DEBUG_OVERLAY_VISIBLE", false)
+                    val appKey = json.optString("APP_KEY", "")
+                    val kakaoNativeAppKey = json.optString("KAKAO_NATIVE_APP_KEY", "")
+                    val kakaoRestApiKey = json.optString("KAKAO_REST_API_KEY", "")
 
                     mainHandler.post {
                         binding.swBoostEnable.isChecked = isBoostEnabled
+                        binding.llBoostSettingsContainer.visibility = if (isBoostEnabled) android.view.View.VISIBLE else android.view.View.GONE
                         binding.sliderOffset.value = offset.toFloat()
                         binding.tvOffsetValue.text = "${offset} km/h"
                         binding.sliderFakeDrop.value = fakeDrop.toFloat()
                         binding.tvFakeDropValue.text = fakeDrop.toString()
                         binding.swDebugOverlay.isChecked = isDebugOverlayVisible
+                        
+                        binding.etTmapAppKey.setText(appKey)
+                        binding.etKakaoNativeAppKey.setText(kakaoNativeAppKey)
+                        binding.etKakaoRestApiKey.setText(kakaoRestApiKey)
                         
                         if (boostMode == 0) {
                             binding.rgBoostMode.check(binding.rbBoostProgressive.id)
@@ -239,6 +251,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupUIListeners() {
         binding.swBoostEnable.setOnCheckedChangeListener { _, isChecked ->
+            binding.llBoostSettingsContainer.visibility = if (isChecked) android.view.View.VISIBLE else android.view.View.GONE
             if (binding.swBoostEnable.isEnabled) {
                 updateSettingOnServer("BLOCK_SPEED_ENABLED", if (isChecked) "true" else "false")
             }
@@ -267,6 +280,37 @@ class MainActivity : AppCompatActivity() {
         
         binding.btnCancelRoute.setOnClickListener {
             cancelRoute()
+        }
+
+        binding.btnSaveApiKeys.setOnClickListener {
+            val appKey = binding.etTmapAppKey.text.toString().trim()
+            val kakaoNative = binding.etKakaoNativeAppKey.text.toString().trim()
+            val kakaoRest = binding.etKakaoRestApiKey.text.toString().trim()
+            
+            val ip = serverIp ?: return@setOnClickListener
+            val formBody = FormBody.Builder()
+                .add("APP_KEY", appKey)
+                .add("KAKAO_NATIVE_APP_KEY", kakaoNative)
+                .add("KAKAO_REST_API_KEY", kakaoRest)
+                .build()
+                
+            val request = Request.Builder()
+                .url("http://$ip:$serverPort/")
+                .post(formBody)
+                .build()
+                
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    mainHandler.post {
+                        Toast.makeText(this@MainActivity, "API 키 저장 실패", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                override fun onResponse(call: Call, response: Response) {
+                    mainHandler.post {
+                        Toast.makeText(this@MainActivity, "API 키를 성공적으로 저장했습니다.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            })
         }
     }
     
