@@ -104,6 +104,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun enableUI(enabled: Boolean) {
+        binding.cbDistanceFormatKm.isEnabled = enabled
+        binding.rbBgAlbumArt.isEnabled = enabled
+        binding.rbBgEq.isEnabled = enabled
+        binding.rbBgEqWave.isEnabled = enabled
+        binding.rbBgEqCircle.isEnabled = enabled
+        binding.cbShowAlbumArtWithEq.isEnabled = enabled
+        binding.sliderMediaRatio.isEnabled = enabled
+        
         binding.swBoostEnable.isEnabled = enabled
         binding.sliderOffset.isEnabled = enabled
         binding.rbBoostProgressive.isEnabled = enabled
@@ -141,8 +149,27 @@ class MainActivity : AppCompatActivity() {
                     val appKey = json.optString("APP_KEY", "")
                     val kakaoNativeAppKey = json.optString("KAKAO_NATIVE_APP_KEY", "")
                     val kakaoRestApiKey = json.optString("KAKAO_REST_API_KEY", "")
+                    val distanceFormatKm = json.optBoolean("USE_KM_DISTANCE_FORMAT", true)
+                    val mediaBgStyle = json.optString("MEDIA_BG_STYLE", "album")
+                    val showAlbumArtWithEq = json.optBoolean("SHOW_ALBUM_ART_WITH_EQ", false)
+                    val mediaSplitRatioF = json.optDouble("MEDIA_SPLIT_RATIO_F", 3.5).toFloat()
 
                     mainHandler.post {
+                        binding.cbDistanceFormatKm.isChecked = distanceFormatKm
+                        
+                        when (mediaBgStyle) {
+                            "eq", "eq_bar" -> binding.rgMediaBgStyle.check(binding.rbBgEq.id)
+                            "eq_wave" -> binding.rgMediaBgStyle.check(binding.rbBgEqWave.id)
+                            "eq_circle" -> binding.rgMediaBgStyle.check(binding.rbBgEqCircle.id)
+                            else -> binding.rgMediaBgStyle.check(binding.rbBgAlbumArt.id)
+                        }
+                        
+                        binding.cbShowAlbumArtWithEq.isChecked = showAlbumArtWithEq
+                        binding.sliderMediaRatio.value = mediaSplitRatioF
+                        
+                        fun fmt(v: Float) = if (v == v.toInt().toFloat()) v.toInt().toString() else v.toString()
+                        binding.tvMediaRatioValue.text = "${fmt(mediaSplitRatioF)} : ${fmt(5f - mediaSplitRatioF)}"
+                        
                         binding.swBoostEnable.isChecked = isBoostEnabled
                         binding.llBoostSettingsContainer.visibility = if (isBoostEnabled) android.view.View.VISIBLE else android.view.View.GONE
                         binding.sliderOffset.value = offset.toFloat()
@@ -250,6 +277,38 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupUIListeners() {
+        binding.cbDistanceFormatKm.setOnCheckedChangeListener { _, isChecked ->
+            if (binding.cbDistanceFormatKm.isEnabled) {
+                updateSettingOnServer("USE_KM_DISTANCE_FORMAT", if (isChecked) "true" else "false")
+            }
+        }
+
+        binding.rgMediaBgStyle.setOnCheckedChangeListener { _, checkedId ->
+            if (binding.rbBgAlbumArt.isEnabled) {
+                val style = when (checkedId) {
+                    binding.rbBgEq.id -> "eq_bar"
+                    binding.rbBgEqWave.id -> "eq_wave"
+                    binding.rbBgEqCircle.id -> "eq_circle"
+                    else -> "album"
+                }
+                updateSettingOnServer("MEDIA_BG_STYLE", style)
+            }
+        }
+
+        binding.cbShowAlbumArtWithEq.setOnCheckedChangeListener { _, isChecked ->
+            if (binding.cbShowAlbumArtWithEq.isEnabled) {
+                updateSettingOnServer("SHOW_ALBUM_ART_WITH_EQ", if (isChecked) "true" else "false")
+            }
+        }
+
+        binding.sliderMediaRatio.addOnChangeListener { _, value, _ ->
+            if (binding.sliderMediaRatio.isEnabled) {
+                fun fmt(v: Float) = if (v == v.toInt().toFloat()) v.toInt().toString() else v.toString()
+                binding.tvMediaRatioValue.text = "${fmt(value)} : ${fmt(5f - value)}"
+                updateSettingOnServer("MEDIA_SPLIT_RATIO_F", value.toString())
+            }
+        }
+
         binding.swBoostEnable.setOnCheckedChangeListener { _, isChecked ->
             binding.llBoostSettingsContainer.visibility = if (isChecked) android.view.View.VISIBLE else android.view.View.GONE
             if (binding.swBoostEnable.isEnabled) {
