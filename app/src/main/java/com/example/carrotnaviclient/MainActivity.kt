@@ -23,6 +23,7 @@ class MainActivity : AppCompatActivity() {
     private var nsdManager: NsdManager? = null
     private var discoveryListener: NsdManager.DiscoveryListener? = null
     private var resolveListener: NsdManager.ResolveListener? = null
+    private var failureCount = 0
     private val SERVICE_TYPE = "_http._tcp."
     private val SERVICE_NAME = "carrotnavi"
     private var serverIp: String? = null
@@ -74,6 +75,7 @@ class MainActivity : AppCompatActivity() {
                             }
                             
                             mainHandler.post {
+                                failureCount = 0
                                 binding.tvConnectionStatus.text = "연결됨: ${serverIp}:${serverPort}"
                                 binding.tvConnectionStatus.setBackgroundColor(android.graphics.Color.parseColor("#4CAF50"))
                                 enableUI(true)
@@ -86,7 +88,11 @@ class MainActivity : AppCompatActivity() {
                     })
                 }
             }
-            override fun onServiceLost(service: NsdServiceInfo) {}
+            override fun onServiceLost(service: NsdServiceInfo) {
+                if (service.serviceName == SERVICE_NAME) {
+                    mainHandler.post { handleConnectionLost() }
+                }
+            }
             override fun onDiscoveryStopped(serviceType: String) {}
             override fun onStartDiscoveryFailed(serviceType: String, errorCode: Int) {
                 nsdManager?.stopServiceDiscovery(this)
@@ -97,10 +103,26 @@ class MainActivity : AppCompatActivity() {
         }
         
         try {
+            nsdManager?.stopServiceDiscovery(discoveryListener)
+        } catch (e: Exception) {}
+        
+        try {
             nsdManager?.discoverServices(SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, discoveryListener)
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    private fun handleConnectionLost() {
+        serverIp = null
+        mainHandler.removeCallbacks(routeInfoRunnable)
+        enableUI(false)
+        binding.tvConnectionStatus.text = "연결 끊김, 재탐색 중..."
+        binding.tvConnectionStatus.setBackgroundColor(android.graphics.Color.parseColor("#FF5252"))
+        binding.llRouteInfoContainer.visibility = View.GONE
+        
+        // Restart discovery
+        startDiscovery()
     }
 
     private fun enableUI(enabled: Boolean) {
@@ -111,6 +133,11 @@ class MainActivity : AppCompatActivity() {
         binding.rbBgEqCircle.isEnabled = enabled
         binding.cbShowAlbumArtWithEq.isEnabled = enabled
         binding.sliderMediaRatio.isEnabled = enabled
+        
+        binding.rbAudioDuckingNone.isEnabled = enabled
+        binding.rbAudioDuckingVolume.isEnabled = enabled
+        binding.rbAudioDuckingPause.isEnabled = enabled
+        binding.sliderVoiceVolume.isEnabled = enabled
         
         binding.swBoostEnable.isEnabled = enabled
         binding.sliderOffset.isEnabled = enabled
@@ -153,9 +180,20 @@ class MainActivity : AppCompatActivity() {
                     val mediaBgStyle = json.optString("MEDIA_BG_STYLE", "album")
                     val showAlbumArtWithEq = json.optBoolean("SHOW_ALBUM_ART_WITH_EQ", false)
                     val mediaSplitRatioF = json.optDouble("MEDIA_SPLIT_RATIO_F", 3.5).toFloat()
+                    val duckingMode = json.optInt("AUDIO_DUCKING_MODE", 1)
+                    val voiceVolume = json.optDouble("VOICE_VOLUME", 1.0).toFloat()
 
                     mainHandler.post {
                         binding.cbDistanceFormatKm.isChecked = distanceFormatKm
+                        
+                        when (duckingMode) {
+                            0 -> binding.rgAudioDuckingMode.check(binding.rbAudioDuckingNone.id)
+                            2 -> binding.rgAudioDuckingMode.check(binding.rbAudioDuckingPause.id)
+                            else -> binding.rgAudioDuckingMode.check(binding.rbAudioDuckingVolume.id)
+                        }
+                        
+                        binding.sliderVoiceVolume.value = voiceVolume
+                        binding.tvVoiceVolumeValue.text = "${(voiceVolume * 100).toInt()}%"
                         
                         when (mediaBgStyle) {
                             "eq", "eq_bar" -> binding.rgMediaBgStyle.check(binding.rbBgEq.id)
@@ -202,9 +240,15 @@ class MainActivity : AppCompatActivity() {
             .build()
 
         client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {}
+            override fun onFailure(call: Call, e: IOException) {
+                failureCount++
+                if (failureCount >= 3) {
+                    mainHandler.post { handleConnectionLost() }
+                }
+            }
 
             override fun onResponse(call: Call, response: Response) {
+                failureCount = 0
                 val body = response.body?.string() ?: return
                 try {
                     val json = JSONObject(body)
@@ -306,6 +350,24 @@ class MainActivity : AppCompatActivity() {
                 fun fmt(v: Float) = if (v == v.toInt().toFloat()) v.toInt().toString() else v.toString()
                 binding.tvMediaRatioValue.text = "${fmt(value)} : ${fmt(5f - value)}"
                 updateSettingOnServer("MEDIA_SPLIT_RATIO_F", value.toString())
+            }
+        }
+
+        binding.rgAudioDuckingMode.setOnCheckedChangeListener { _, checkedId ->
+            if (binding.rbAudioDuckingNone.isEnabled) {
+                val mode = when (checkedId) {
+                    binding.rbAudioDuckingNone.id -> "0"
+                    binding.rbAudioDuckingPause.id -> "2"
+                    else -> "1"
+                }
+                updateSettingOnServer("AUDIO_DUCKING_MODE", mode)
+            }
+        }
+
+        binding.sliderVoiceVolume.addOnChangeListener { _, value, _ ->
+            if (binding.sliderVoiceVolume.isEnabled) {
+                binding.tvVoiceVolumeValue.text = "${(value * 100).toInt()}%"
+                updateSettingOnServer("VOICE_VOLUME", value.toString())
             }
         }
 

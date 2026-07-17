@@ -180,7 +180,7 @@
                         android:text="앨범아트"
                         android:textColor="#FFFFFF"
                         app:buttonTint="#4CAF50"
-                        android:enabled="false"/>
+                        android:enabled="true"/>
 
                     <RadioButton
                         android:id="@+id/rbBgEq"
@@ -189,7 +189,7 @@
                         android:text="EQ 시각화 (막대)"
                         android:textColor="#FFFFFF"
                         app:buttonTint="#4CAF50"
-                        android:enabled="false"/>
+                        android:enabled="true"/>
 
                     <RadioButton
                         android:id="@+id/rbBgEqWave"
@@ -198,7 +198,7 @@
                         android:text="EQ 시각화 (물결)"
                         android:textColor="#FFFFFF"
                         app:buttonTint="#4CAF50"
-                        android:enabled="false"/>
+                        android:enabled="true"/>
 
                     <RadioButton
                         android:id="@+id/rbBgEqCircle"
@@ -207,7 +207,7 @@
                         android:text="EQ 시각화 (원형)"
                         android:textColor="#FFFFFF"
                         app:buttonTint="#4CAF50"
-                        android:enabled="false"/>
+                        android:enabled="true"/>
                 </RadioGroup>
 
                 <com.google.android.material.checkbox.MaterialCheckBox
@@ -217,7 +217,7 @@
                     android:text="EQ 사용 시 앨범아트도 흐리게 표시"
                     android:textColor="#BBBBBB"
                     app:buttonTint="#4CAF50"
-                    android:enabled="false"
+                    android:enabled="true"
                     android:layout_marginBottom="16dp" />
 
                 <TextView
@@ -243,7 +243,7 @@
                         android:valueFrom="0.5"
                         android:valueTo="5.0"
                         android:value="5.0"
-                        android:enabled="false"
+                        android:enabled="true"
                         app:thumbColor="#4CAF50"
                         app:trackColorActive="#4CAF50"
                         app:trackColorInactive="#333333"/>
@@ -253,6 +253,110 @@
                         android:layout_width="60dp"
                         android:layout_height="wrap_content"
                         android:text="5 : 1"
+                        android:textColor="#FFFFFF"
+                        android:gravity="end"
+                        android:textStyle="bold"/>
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 오디오 설정 카드 -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="#1E1E1E"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:animateLayoutChanges="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="오디오 설정"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:layout_marginBottom="16dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="안내 시 다른 미디어 처리 방식"
+                    android:textColor="#BBBBBB"
+                    android:layout_marginBottom="8dp"/>
+                    
+                <RadioGroup
+                    android:id="@+id/rgAudioDuckingMode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="16dp">
+                    <RadioButton
+                        android:id="@+id/rbAudioDuckingNone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#FFFFFF"
+                        app:buttonTint="#4CAF50"
+                        android:enabled="true"
+                        android:text="사용 안함 (기본)"/>
+                    <RadioButton
+                        android:id="@+id/rbAudioDuckingVolume"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#FFFFFF"
+                        app:buttonTint="#4CAF50"
+                        android:enabled="true"
+                        android:text="볼륨 줄이기 (오디오 포커스)"/>
+                    <RadioButton
+                        android:id="@+id/rbAudioDuckingPause"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#FFFFFF"
+                        app:buttonTint="#4CAF50"
+                        android:enabled="true"
+                        android:text="강제 일시정지 후 재생 (샤오미 등)"/>
+                </RadioGroup>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="내비게이션 안내 음량"
+                    android:textColor="#BBBBBB"
+                    android:layout_marginBottom="8dp"/>
+                    
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    
+                    <com.google.android.material.slider.Slider
+                        android:id="@+id/sliderVoiceVolume"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:valueFrom="0.0"
+                        android:valueTo="1.0"
+                        android:stepSize="0.1"
+                        android:enabled="true"
+                        app:thumbColor="#4CAF50"
+                        app:trackColorActive="#4CAF50"
+                        app:trackColorInactive="#333333"
+                        android:value="1.0"/>
+                        
+                    <TextView
+                        android:id="@+id/tvVoiceVolumeValue"
+                        android:layout_width="40dp"
+                        android:layout_height="wrap_content"
+                        android:text="100%"
                         android:textColor="#FFFFFF"
                         android:gravity="end"
                         android:textStyle="bold"/>
